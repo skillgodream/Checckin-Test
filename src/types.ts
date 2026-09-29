@@ -172,7 +172,7 @@ export const DARK_STORE_CAPABILITIES: CapabilityDefinition[] = [
   },
   {
     id: 7,
-    code: "DSP-07-PRODUCE-WEIGH",
+    code: "DSP-07",
     name: "Produce Weighment",
     description: "Selecting fresh produce, visual quality check, digital scale taring, and price look-up barcode printing.",
     category: "Core Fulfillment & Accuracy",

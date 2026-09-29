@@ -373,7 +373,7 @@ export const ModulesView: React.FC<ModulesViewProps> = ({
       <div className="p-3 sm:p-4">
         <div 
           id="modules-hero-banner-card"
-          className="module-banner-card-bg rounded-[32px] p-5 sm:p-6 text-white shadow-2xl border border-white/15 relative overflow-hidden space-y-4"
+          className="module-banner-card-bg rounded-[32px] p-5 sm:p-6 text-white shadow-2xl border border-white/15 relative overflow-hidden space-y-4 min-h-[175px]"
         >
           {/* Subtle soft ambient glow matching attachment palette */}
           <div className="absolute -top-14 -left-14 w-52 h-52 bg-blue-500/20 rounded-full blur-3xl pointer-events-none z-0" />
@@ -388,11 +388,8 @@ export const ModulesView: React.FC<ModulesViewProps> = ({
                 <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white drop-shadow-sm leading-tight">
                   {isHindi ? "एलएमएस प्रशिक्षण मॉड्यूल" : "LMS Training Modules"}
                 </h2>
-                <p className="text-xs text-cyan-100/80 font-medium">
-                  {isHindi 
-                    ? "10-दिवसीय कौशल यात्रा • 19 एलएमएस वीडियो मॉड्यूल" 
-                    : "10-Day Skill Journey • 19 LMS Video Modules"}
-                </p>
+                {/* Spacer to keep card dimensions perfectly identical */}
+                <div className="h-5" />
               </div>
 
               {/* Course Progress Bar */}
@@ -527,19 +524,6 @@ export const ModulesView: React.FC<ModulesViewProps> = ({
               </div>
             ) : null}
           </div>
-
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (targetCapDef) setActiveCapabilityModal(targetCapDef.id);
-              else if (currentDayCurriculumMod) handleStartModule(currentDayCurriculumMod.id);
-            }}
-            className="w-full bg-[#1b64f2] hover:bg-[#1553d1] text-white font-extrabold text-sm sm:text-base py-3.5 px-6 rounded-full flex items-center justify-center gap-2 shadow-sm shadow-blue-500/20 active:scale-[0.98] transition-all"
-          >
-            <span>{isHindi ? "आज का लक्ष्य शुरू करें" : "Start Today's Goal"}</span>
-            <ArrowRight className="w-4 h-4 text-white stroke-[2.5]" />
-          </button>
         </div>
       )}
 
@@ -559,37 +543,45 @@ export const ModulesView: React.FC<ModulesViewProps> = ({
           </span>
         </div>
 
-        {/* 4 COMPACT CARDS IN 4-GRID PLACEMENT (WHITE NEUMORPHIC, VIBRANT COLORED ICONS) */}
-        <div className="grid grid-cols-4 gap-2.5 sm:gap-3.5 my-1.5">
+        {/* 4 COMPACT CARDS IN 4-GRID PLACEMENT (MATCHING HOME SCREEN "MY SKILLS" PROGRESS 1 PLACEMENT STYLE) */}
+        <div className="grid grid-cols-4 gap-2.5 my-1.5">
           {SKILL_CATEGORIES.map((cat) => {
             const isSelected = selectedSkillCategory === cat.id;
             const IconComponent = cat.icon;
+
+            // Short clean english/hindi labels for 4 core categories
+            const titleLabel = cat.id === "basics"
+              ? (isHindi ? "बुनियादी" : "Basics")
+              : cat.id === "accuracy"
+              ? (isHindi ? "सटीकता" : "Accuracy")
+              : cat.id === "exceptions"
+              ? (isHindi ? "अपवाद" : "Exceptions")
+              : (isHindi ? "गति" : "Flow");
 
             return (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => setSelectedSkillCategory(cat.id)}
-                title={isHindi ? `${cat.titleHindi} - ${cat.subtitleHindi}` : `${cat.titleEnglish} - ${cat.subtitleEnglish}`}
-                className={`relative aspect-square rounded-2xl sm:rounded-[22px] flex items-center justify-center transition-all duration-200 cursor-pointer select-none active:scale-95 bg-white ${
+                className={`group flex flex-col items-center justify-center rounded-[24px] p-2 flex-1 min-h-[105px] transition-all duration-200 active:scale-95 cursor-pointer text-center ${
                   isSelected
-                    ? `shadow-[inset_3px_3px_6px_rgba(0,0,0,0.08),inset_-3px_-3px_6px_rgba(255,255,255,0.95)] border border-slate-200/90 ring-2 ${cat.activeRing} ring-offset-2 ring-offset-[#f8fafc] scale-[1.02]`
-                    : "shadow-[5px_5px_12px_rgba(0,0,0,0.06),-4px_-4px_10px_rgba(255,255,255,0.95),0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[7px_7px_15px_rgba(0,0,0,0.09),-5px_-5px_13px_rgba(255,255,255,1)] border border-slate-100 hover:border-slate-200/80"
+                    ? "bg-[#18181B] border border-black/10 text-white shadow-xs"
+                    : "bg-[#F4F3EE] border border-black/[0.02] text-[#18181B] hover:bg-stone-200"
                 }`}
               >
-                {/* Red alert dot if specified */}
-                {cat.hasNotification && (
-                  <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#ef4444] shadow-[0_0_6px_#ef4444]" />
-                )}
-
-                {/* Centered Sleek Icon Only (Generous size, elegant stroke, category color) */}
-                <IconComponent
-                  className={`w-8 h-8 sm:w-8.5 sm:h-8.5 transition-all duration-200 ${cat.iconColor} ${
-                    isSelected
-                      ? "stroke-[2.2] scale-110 drop-shadow-xs"
-                      : "stroke-[1.8] opacity-85 hover:opacity-100"
-                  }`}
-                />
+                {/* Centered Circular Icon container */}
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 mb-1.5 transition-all ${
+                  isSelected ? "bg-white/15 text-white" : "bg-[#18181B]/8 text-[#18181B]"
+                }`}>
+                  <IconComponent className="w-4.5 h-4.5 stroke-[2.2]" />
+                </div>
+                
+                {/* Label beneath icon */}
+                <span className={`text-[10px] sm:text-[11px] font-black tracking-tight leading-none ${
+                  isSelected ? "text-white" : "text-stone-900"
+                }`}>
+                  {titleLabel}
+                </span>
               </button>
             );
           })}
@@ -617,8 +609,8 @@ export const ModulesView: React.FC<ModulesViewProps> = ({
                 </div>
               )}
 
-              {/* 4 GRID PLACEMENT FOR SKILL CARDS (CLEAN ICONS, NO OVER-TEXTING) */}
-              <div className="grid grid-cols-4 gap-2 sm:gap-3 my-2">
+              {/* VERTICAL PLACEMENT FOR SKILL CARDS (ONE ITEM PER ROW, STACKED VERTICALLY) */}
+              <div className="space-y-2.5 my-2 w-full">
                 {skillsToDisplay.map((cap) => {
                   const { compAct, totalAct } = getCapabilityProgressRatio(cap.id);
                   const isDone = totalAct > 0 && compAct === totalAct;
@@ -654,29 +646,38 @@ export const ModulesView: React.FC<ModulesViewProps> = ({
                     <div
                       key={cap.id}
                       onClick={() => setActiveCapabilityModal(cap.id)}
-                      className={`relative aspect-square rounded-2xl sm:rounded-[22px] p-2 sm:p-2.5 flex flex-col items-center justify-between transition-all duration-200 cursor-pointer select-none active:scale-95 text-center ${
+                      className={`relative rounded-[20px] p-3.5 flex items-center justify-between gap-4 transition-all duration-200 cursor-pointer select-none active:scale-[0.99] border ${
                         isDone
-                          ? "bg-emerald-500/10 border border-emerald-500/30 shadow-xs hover:border-emerald-500/50"
-                          : "bg-white border border-slate-100 shadow-[4px_4px_10px_rgba(0,0,0,0.05),-2px_-2px_8px_rgba(255,255,255,0.9)] hover:shadow-md hover:border-slate-200"
+                          ? "bg-emerald-500/10 border-emerald-500/25 shadow-2xs hover:border-emerald-500/40"
+                          : "bg-white border-slate-100 shadow-[2px_2px_8px_rgba(0,0,0,0.04)] hover:shadow-xs hover:border-slate-200"
                       }`}
                     >
-                      <div className={`p-1.5 sm:p-2 rounded-xl mt-0.5 ${isDone ? "bg-emerald-500/20 text-emerald-500" : "bg-slate-100 text-slate-700"}`}>
-                        <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
+                      {/* Left: Icon container & Metadata */}
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className={`p-2.5 rounded-xl shrink-0 ${isDone ? "bg-emerald-500/15 text-emerald-600" : "bg-slate-100 text-slate-700"}`}>
+                          <IconComponent className="w-5 h-5 stroke-[2]" />
+                        </div>
+
+                        <div className="min-w-0">
+                          <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider font-mono block mb-0.5">
+                            {cap.code}
+                          </span>
+                          <h4 className="text-[13px] sm:text-[14px] font-bold text-slate-900 tracking-tight leading-tight truncate">
+                            {cap.name === "Produce Weighment" ? (isHindi ? "ताजा वजन" : "Produce Weighment") : cap.name}
+                          </h4>
+                        </div>
                       </div>
 
-                      <h4 className="text-[10px] sm:text-[11px] font-extrabold text-slate-800 leading-tight line-clamp-2 px-0.5 my-auto">
-                        {cap.name}
-                      </h4>
-
-                      <div className="w-full flex items-center justify-center">
-                        <span className={`text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 rounded-full border ${
+                      {/* Right: Progress Badge */}
+                      <div className="shrink-0">
+                        <span className={`text-[10px] sm:text-[11px] font-black px-2.5 py-1 rounded-full border ${
                           isDone
-                            ? "bg-emerald-500/20 text-emerald-600 border-emerald-500/30"
+                            ? "bg-emerald-500/20 text-emerald-700 border-emerald-500/25"
                             : compAct > 0
-                            ? "bg-amber-500/15 text-amber-600 border-amber-500/30"
+                            ? "bg-amber-500/15 text-amber-700 border-amber-500/25"
                             : "bg-slate-100 text-slate-500 border-slate-200"
                         }`}>
-                          {compAct}/{totalAct}
+                          {compAct}/{totalAct} {isHindi ? "पूर्ण" : "done"}
                         </span>
                       </div>
                     </div>

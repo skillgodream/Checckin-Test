@@ -130,7 +130,7 @@ export const CommercialReadinessTrajectoryMiniCard: React.FC<CommercialReadiness
     <div
       id="home-commercial-readiness-card"
       onClick={onNavigateToProgress}
-      className="w-full bg-[#EBEAE5] rounded-[28px] border border-black/[0.04] shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden mb-5 cursor-pointer transition-all active:scale-[0.99] group text-left"
+      className="w-full bg-white rounded-[28px] border border-black/[0.03] shadow-xs relative overflow-hidden mb-5 cursor-pointer transition-all active:scale-[0.99] group text-left"
     >
       {/* Soft internal gradient highlight instead of dark glow */}
       <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />

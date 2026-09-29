@@ -1303,7 +1303,7 @@ export const NewHireView: React.FC<NewHireViewProps> = ({
 
   if (activeSection === "home") {
     return (
-      <div className="max-w-md mx-auto pb-36 select-none min-h-screen relative bg-[#F5F5F7] text-slate-900 overflow-hidden font-sans">
+      <div className="max-w-md mx-auto pb-36 select-none min-h-screen relative bg-[#EBEAE5] text-slate-900 overflow-hidden font-sans">
         {/* Soft Ambient Background Glow Orbs for Glass Reflection */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-10 -left-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl" />
@@ -1406,25 +1406,91 @@ export const NewHireView: React.FC<NewHireViewProps> = ({
             </div>
           </div>
 
-          {/* CARD 1: READINESS (Apple Fluid Glass - Expanded Hero Banner) */}
-          <div className="bg-[#EBEAE5] rounded-3xl py-8 px-6 shadow-[0_12px_40px_rgba(0,0,0,0.05)] border border-black/[0.04] relative overflow-hidden">
-            <div className="flex items-center justify-between">
-              <span className="font-extrabold text-xs tracking-wider text-slate-600 uppercase">
-                {isHindi ? "तत्परता" : "READINESS"}
-              </span>
+          {/* CARD 1: READINESS (Telemetry-Style Circular Dial Solid White Card) */}
+          <div className="bg-white rounded-[32px] p-6 shadow-xs border border-black/[0.03] relative overflow-hidden flex flex-col items-center">
+            {/* Soft background glow orbs */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/5 rounded-full blur-xl" />
             </div>
 
-            <div className="mt-6 mb-3 text-center">
-              <span className="text-7xl sm:text-8xl font-bold tracking-tight text-slate-900 font-sans leading-none block">
-                {Math.round(typeof authoritativeReadiness === "number" ? authoritativeReadiness : 88)}%
-              </span>
-              
-              {/* Centered 'Days Remaining' Pill under the percentage */}
-              <div className="flex justify-center mt-3">
-                <span className="bg-rose-500/10 border border-rose-500/20 text-rose-700 px-3.5 py-1 rounded-full text-[10px] font-black tracking-widest uppercase shadow-3xs animate-pulse">
-                  {Math.max(0, 10 - currentDay)} {isHindi ? "दिन शेष" : "DAYS REMAINING"}
+            {/* Concentric rings wrapper */}
+            <div className="relative w-64 h-64 flex items-center justify-center z-10">
+              <svg viewBox="0 0 100 100" className="w-full h-full select-none -rotate-90">
+                {/* Concentric Circle 1 (LMS) - Outer Background */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="44"
+                  fill="none"
+                  stroke="#F4F3EE"
+                  strokeWidth="5"
+                />
+                {/* Concentric Circle 1 (LMS) - Outer Progress Bar */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="44"
+                  fill="none"
+                  stroke="#007AFF"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  strokeDasharray="276.46"
+                  strokeDashoffset={276.46 * (1 - (courseCompletionPercentage / 100))}
+                  className="transition-all duration-700 ease-out"
+                />
+
+                {/* Concentric Circle 2 (Floor / Activity) - Inner Background */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="35"
+                  fill="none"
+                  stroke="#F4F3EE"
+                  strokeWidth="5"
+                />
+                {/* Concentric Circle 2 (Floor / Activity) - Inner Progress Bar */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="35"
+                  fill="none"
+                  stroke="#18181B"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  strokeDasharray="219.91"
+                  strokeDashoffset={219.91 * (1 - (Math.min(100, Math.round((demonstratedCount / 19) * 100)) / 100))}
+                  className="transition-all duration-700 ease-out"
+                />
+              </svg>
+
+              {/* Centered Readiness Percentage Score */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center select-none pointer-events-none">
+                <span className="text-[48px] font-black tracking-[-0.05em] text-stone-900 leading-none">
+                  {Math.round(typeof authoritativeReadiness === "number" ? authoritativeReadiness : 88)}%
+                </span>
+                <span className="text-[10px] font-black text-[#8E8C85] tracking-widest uppercase mt-2">
+                  {isHindi ? "तत्परता" : "READINESS"}
                 </span>
               </div>
+            </div>
+
+            {/* Minimal Subtext Indicators beneath the circles */}
+            <div className="flex items-center gap-4 mt-3.5 text-[10.5px] font-bold z-10">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#007AFF]" />
+                <span className="text-stone-700">LMS ({courseCompletionPercentage}%)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#18181B]" />
+                <span className="text-stone-700">Floor ({Math.min(100, Math.round((demonstratedCount / 19) * 100))}%)</span>
+              </div>
+            </div>
+
+            {/* 'Days Remaining' Pill aligned beneath the rings */}
+            <div className="flex justify-center mt-3.5 z-10">
+              <span className="bg-rose-500/10 border border-rose-500/20 text-rose-700 px-3.5 py-1 rounded-full text-[9.5px] font-black tracking-widest uppercase shadow-3xs animate-pulse">
+                {Math.max(0, 10 - currentDay)} {isHindi ? "दिन शेष" : "DAYS REMAINING"}
+              </span>
             </div>
           </div>
 
@@ -1474,8 +1540,8 @@ export const NewHireView: React.FC<NewHireViewProps> = ({
             />
           </div>
 
-          {/* CARD 3: MY SKILLS - 4 CORE AREAS (Light theme premium consistent rhythm styling) */}
-          <div className="bg-[#EBEAE5] rounded-[28px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-black/[0.04] space-y-4">
+          {/* CARD 3: MY SKILLS - 4 CORE AREAS (Telemetry-Style Solid White Parent) */}
+          <div className="bg-white rounded-[32px] p-5 shadow-xs border border-black/[0.03] space-y-4">
             <div className="flex items-center justify-between px-1">
               <span className="font-extrabold text-[12px] tracking-wider text-[#18181B] uppercase">
                 {isHindi ? "मेरा कौशल" : "MY SKILLS"}
@@ -1485,7 +1551,7 @@ export const NewHireView: React.FC<NewHireViewProps> = ({
               </span>
             </div>
 
-            {/* Square style cards in horizontal row matching screenshot styling, but with premium light consistent styles */}
+            {/* Square style cards in horizontal row with premium Telemetry Style grey backgrounds */}
             <div className="grid grid-cols-4 gap-2.5">
               {HOME_LEARNING_METRICS.map((metric) => {
                 let isUpToDate = true;
@@ -1505,7 +1571,7 @@ export const NewHireView: React.FC<NewHireViewProps> = ({
                   <div
                     key={metric.id}
                     onClick={() => setActiveSection("modules")}
-                    className="group flex flex-col items-center justify-center bg-white/80 border border-black/[0.03] text-slate-800 rounded-[24px] p-2.5 flex-1 min-h-[110px] hover:bg-white shadow-[0_4px_16px_rgba(0,0,0,0.02)] active:scale-95 transition-all cursor-pointer text-center"
+                    className="group flex flex-col items-center justify-center bg-[#F4F3EE] border border-black/[0.02] text-stone-900 rounded-[24px] p-2.5 flex-1 min-h-[110px] hover:bg-stone-200 shadow-3xs active:scale-95 transition-all cursor-pointer text-center"
                   >
                     {/* Centered Circular Icon with custom container matching screenshot structure, but in light theme */}
                     <div className="w-11 h-11 rounded-full bg-[#18181B]/8 flex items-center justify-center text-[#18181B] shrink-0 mb-2 group-hover:scale-105 transition-transform">
@@ -1522,8 +1588,8 @@ export const NewHireView: React.FC<NewHireViewProps> = ({
             </div>
           </div>
 
-          {/* CARD 4: YESTERDAY PERFORMANCE CARD (Apple Fluid Glass) */}
-          <div className="bg-white/80 backdrop-blur-2xl rounded-3xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.05)] border border-white/90 ring-1 ring-black/5 space-y-3">
+          {/* CARD 4: YESTERDAY PERFORMANCE CARD (Telemetry-Style Solid White) */}
+          <div className="bg-white rounded-[32px] p-5 shadow-xs border border-black/[0.03] space-y-3">
             <div className="flex items-center justify-between">
               <span className="font-extrabold text-xs tracking-wider text-slate-600 uppercase">
                 {isHindi ? "कल का प्रदर्शन" : "YESTERDAY PERFORMANCE"}

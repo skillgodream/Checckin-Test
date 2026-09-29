@@ -84,10 +84,110 @@ export const TodaysGoalLandingView: React.FC<TodaysGoalLandingViewProps> = ({
   const [activeModule, setActiveModule] = useState<CustomModule | null>(null);
   const [activeTask, setActiveTask] = useState<CustomTask | null>(null);
 
+  // Switcher to view 3 different visual concepts live
+  const [activeConcept, setActiveConcept] = useState<"option1" | "option2" | "option3">("option1");
+  // Interactive mini-map layer selection for Option 2
+  const [mapHeatmapLayer, setMapHeatmapLayer] = useState<"speed" | "accuracy" | "qc">("speed");
+
   // Interactive task completion state
   const [completedTaskIds, setCompletedTaskIds] = useState<Record<string, boolean>>({
     task_1: true,
   });
+
+  // Screenshot-accurate interactive checklist tasks state representing 11 total subtasks
+  const [screenshotTasks, setScreenshotTasks] = useState([
+    {
+      id: "aisle_walk",
+      title: "Aisle 4-8 physical walk",
+      badge: "MAP WALK",
+      subtext: "Review physical shelf heights and label alignment.",
+      expanded: true, // starts expanded as shown in the screenshot
+      items: [
+        { id: "aisle_1", label: "Verify bin coordinates align with PDA guidelines", completed: false },
+        { id: "aisle_2", label: "Trace vertical level labels (Levels 1 to 5) in Aisles 4-8", completed: false },
+        { id: "aisle_3", label: "Confirm floor barcode integrity with Buddy Vikram", completed: false },
+      ]
+    },
+    {
+      id: "pick_50",
+      title: "Pick 50 orders via ring scanner",
+      badge: "SCANNER",
+      subtext: "Pick with 0 mis-scans using wearable scanner.",
+      expanded: false,
+      items: [
+        { id: "pick_1", label: "Equip ring wearable scanner and pair with PDA", completed: false },
+        { id: "pick_2", label: "Aisle 4 traversal verification check", completed: false },
+        { id: "pick_3", label: "Validate barcode response chimes", completed: false },
+      ]
+    },
+    {
+      id: "drills",
+      title: "Active Floor Drills & Traversal SOP",
+      badge: "DRILLS",
+      subtext: "Demonstrate layout flow pacing benchmarks.",
+      expanded: false,
+      items: [
+        { id: "drill_1", label: "Complete 1 segment simulation task", completed: false },
+        { id: "drill_2", label: "Review floor dispatch routing instructions", completed: false },
+        { id: "drill_3", label: "Maintain 100% correct barcode scanning scans", completed: false },
+        { id: "drill_4", label: "LMS lesson variant verification test pass", completed: false },
+        { id: "drill_5", label: "Audit 3 random packaging variants with supervisor", completed: false },
+      ]
+    }
+  ]);
+
+  const totalScreenshotItems = useMemo(() => {
+    return screenshotTasks.reduce((acc, t) => acc + t.items.length, 0);
+  }, [screenshotTasks]);
+
+  const completedScreenshotItems = useMemo(() => {
+    return screenshotTasks.reduce((acc, t) => acc + t.items.filter(i => i.completed).length, 0);
+  }, [screenshotTasks]);
+
+  const toggleSubItem = (taskId: string, subItemId: string) => {
+    setScreenshotTasks(prev =>
+      prev.map(task => {
+        if (task.id === taskId) {
+          return {
+            ...task,
+            items: task.items.map(item => {
+              if (item.id === subItemId) {
+                return { ...item, completed: !item.completed };
+              }
+              return item;
+            })
+          };
+        }
+        return task;
+      })
+    );
+  };
+
+  const markAllDone = (taskId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setScreenshotTasks(prev =>
+      prev.map(task => {
+        if (task.id === taskId) {
+          return {
+            ...task,
+            items: task.items.map(item => ({ ...item, completed: true }))
+          };
+        }
+        return task;
+      })
+    );
+  };
+
+  const toggleExpandTask = (taskId: string) => {
+    setScreenshotTasks(prev =>
+      prev.map(task => {
+        if (task.id === taskId) {
+          return { ...task, expanded: !task.expanded };
+        }
+        return task;
+      })
+    );
+  };
 
   const toggleTaskCompletion = (taskId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -365,334 +465,384 @@ export const TodaysGoalLandingView: React.FC<TodaysGoalLandingViewProps> = ({
       </div>
 
       {/* MAIN CONTENT CONTAINER */}
-      <div className="max-w-md mx-auto space-y-3.5 relative z-10">
-        {/* SECTION 1: HERO BANNER (REIMAGINED TELEMETRY APPLISH WHITE STYLE) */}
+      <div className="max-w-md mx-auto space-y-3 relative z-10">
+        {/* TOP HEADER CARD: Check-in Checkout Style Header Block */}
         <div
-          id="circular-telemetry-dial-widget"
-          className="bg-white text-stone-900 border-b border-black/[0.04] rounded-b-[32px] p-4.5 sm:p-5 shadow-xs select-none relative overflow-hidden transition-all -mx-5 -mt-5 mb-4 pt-14 pb-5 animate-in slide-in-from-top duration-300"
+          id="telemetry-top-header-card"
+          className="bg-white rounded-[28px] p-4 flex items-center justify-between shadow-xs border border-black/[0.03] mt-2 animate-in slide-in-from-top duration-200"
         >
-          {/* Back Icon & Header Container Overlay */}
-          <div className="absolute top-4 left-0 right-0 px-4 flex items-center justify-between z-20">
+          {/* Left: Back Button & Store / Title Info */}
+          <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={onBack}
-              className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 shadow-2xs flex items-center justify-center text-slate-800 active:scale-95 transition-all cursor-pointer"
+              className="w-10 h-10 rounded-2xl bg-[#18181B] text-white flex items-center justify-center shrink-0 shadow-xs hover:bg-neutral-800 transition-colors cursor-pointer"
               title={isHindi ? "वापस जाएं" : "Back"}
             >
-              <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+              <ChevronLeft className="w-5 h-5 stroke-[2.8]" />
             </button>
-            
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-800">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-                </span>
-                <span className="text-[10px] font-black uppercase tracking-wider">
-                  {isHindi ? "लाइव" : "LIVE"}
-                </span>
-              </div>
+
+            <div>
+              <h2 className="text-[14.5px] sm:text-[15px] font-bold text-[#18181B] leading-tight">
+                {isHindi ? "आज का लक्ष्य" : "Today's Goal"}
+              </h2>
             </div>
-            
-            {onToggleLanguage ? (
-              <div className="bg-[#E5E4DE] rounded-full p-0.5 flex items-center border border-black/[0.03]">
-                <button
-                  type="button"
-                  onClick={() => isHindi && onToggleLanguage()}
-                  className={`rounded-full px-3 py-1 text-xs font-bold transition-all cursor-pointer ${
-                    !isHindi
-                      ? "bg-[#18181B] text-white shadow-xs"
-                      : "text-[#716F68] hover:text-[#18181B]"
-                  }`}
-                >
-                  EN
-                </button>
-                <button
-                  type="button"
-                  onClick={() => !isHindi && onToggleLanguage()}
-                  className={`rounded-full px-3 py-1 text-xs font-bold transition-all cursor-pointer ${
-                    isHindi
-                      ? "bg-[#18181B] text-white shadow-xs"
-                      : "text-[#716F68] hover:text-[#18181B]"
-                  }`}
-                >
-                  हिंदी
-                </button>
-              </div>
-            ) : (
-              <div className="w-9" />
-            )}
           </div>
 
-          {/* Top Row: Dynamic completion progress text + LMS progress bars */}
-          <div className="flex items-center gap-4 relative z-10 pt-2 w-full mt-2">
-            <div className="flex items-baseline shrink-0 leading-none">
-              <span className="font-black text-[#18181B] tracking-[-0.04em] text-[48px] sm:text-[54px]">
-                {overallTodayCompletionPct}
+          {/* Right: Pill Language Switcher matching Telemetry Header perfectly */}
+          {onToggleLanguage ? (
+            <div className="bg-[#E5E4DE] rounded-full p-0.5 flex items-center">
+              <button
+                type="button"
+                onClick={() => isHindi && onToggleLanguage()}
+                className={`rounded-full px-3 py-1 text-xs font-bold transition-all cursor-pointer ${
+                  !isHindi
+                    ? "bg-[#18181B] text-white shadow-xs"
+                    : "text-[#716F68] hover:text-[#18181B]"
+                }`}
+              >
+                EN
+              </button>
+              <button
+                type="button"
+                onClick={() => !isHindi && onToggleLanguage()}
+                className={`rounded-full px-3 py-1 text-xs font-bold transition-all cursor-pointer ${
+                  isHindi
+                    ? "bg-[#18181B] text-white shadow-xs"
+                    : "text-[#716F68] hover:text-[#18181B]"
+                }`}
+              >
+                हिंदी
+              </button>
+            </div>
+          ) : (
+            <div className="bg-[#E5E4DE] rounded-full p-0.5 flex items-center">
+              <span className="bg-[#18181B] text-white rounded-full px-3 py-1 text-xs font-bold">
+                EN
               </span>
-              <span className="font-bold text-[#716F68] text-xl ml-0.5">%</span>
             </div>
-            
-            <div className="space-y-2.5 flex-1 w-full pl-4 border-l border-black/10">
-              {/* LMS Progress Bar */}
-              <div className="space-y-0.5 w-full">
-                <div className="flex justify-between items-center text-[10px] font-extrabold tracking-wide text-stone-700 leading-none">
-                  <span>LMS PROGRESS</span>
-                  <span>{!hasAssignedLms ? "100" : lmsProgressPct}%</span>
-                </div>
-                <div className="w-full h-1.5 bg-[#E5E4DE] rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-blue-600 shadow-3xs"
-                    style={{ width: `${!hasAssignedLms ? 100 : lmsProgressPct}%` }}
-                  />
-                </div>
-              </div>
+          )}
+        </div>
 
-              {/* Floor Activities Progress Bar */}
-              <div className="space-y-0.5 w-full">
-                <div className="flex justify-between items-center text-[10px] font-extrabold tracking-wide text-stone-700 leading-none">
-                  <span>ACTIVITY PROGRESS</span>
-                  <span>{activityProgressPct}%</span>
-                </div>
-                <div className="w-full h-1.5 bg-[#E5E4DE] rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-[#18181B] shadow-3xs"
-                    style={{ width: `${activityProgressPct}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Row: Horizontal Live telemetry speed, accuracy, QC metrics buttons */}
-          <div className="grid grid-cols-3 gap-2 mt-5 pt-3.5 border-t border-black/10 relative z-10">
-            {/* Metric Button 1: Pick Speed */}
+        {/* COMPACT TELEMETRY STATUS HUD (OPTION 1) */}
+        <div
+          id="telemetry-status-hud-card"
+          className="bg-white text-stone-900 border border-black/[0.04] rounded-[28px] p-5 shadow-xs select-none relative overflow-hidden transition-all animate-in slide-in-from-top duration-300"
+        >
+          {/* Top Row: Mini-Metric Buttons */}
+          <div className="flex items-center justify-between gap-3">
+            {/* Speed segment */}
             <button
               type="button"
               onClick={() => setActiveMetricModal("speed")}
               title={isHindi ? "पिक स्पीड देखें" : "View Live Pick Speed"}
-              className="flex items-center justify-center gap-2 py-1.5 px-2.5 rounded-xl bg-[#F4F3EE] hover:bg-[#EBEAE5] text-[#18181B] border border-black/[0.03] shadow-2xs group transition-all cursor-pointer active:scale-95 text-center min-w-0 font-bold"
+              className="flex flex-col items-center justify-center flex-1 py-2.5 px-1 bg-[#F4F3EE] hover:bg-stone-200 rounded-2xl border border-black/[0.02] text-center transition-colors shrink-0 cursor-pointer min-w-0"
             >
-              <Zap className="w-3.5 h-3.5 text-blue-600 group-hover:scale-110 transition-transform shrink-0" />
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-800 truncate">Speed</span>
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mb-1">
+                <Zap className="w-4 h-4 fill-current" />
+              </div>
+              <span className="text-[9.5px] font-extrabold uppercase tracking-widest text-[#716F68] truncate w-full">SPEED</span>
+              <span className="text-[13px] font-black text-[#18181B] mt-0.5">34 / 45 IPH</span>
             </button>
 
-            {/* Metric Button 2: Accuracy */}
+            {/* Accuracy segment */}
             <button
               type="button"
               onClick={() => setActiveMetricModal("accuracy")}
               title={isHindi ? "सटीकता देखें" : "View Live Accuracy"}
-              className="flex items-center justify-center gap-2 py-1.5 px-2.5 rounded-xl bg-[#F4F3EE] hover:bg-[#EBEAE5] text-[#18181B] border border-black/[0.03] shadow-2xs group transition-all cursor-pointer active:scale-95 text-center min-w-0 font-bold"
+              className="flex flex-col items-center justify-center flex-1 py-2.5 px-1 bg-[#F4F3EE] hover:bg-stone-200 rounded-2xl border border-black/[0.02] text-center transition-colors shrink-0 cursor-pointer min-w-0"
             >
-              <Target className="w-3.5 h-3.5 text-emerald-600 stroke-[2.5] group-hover:scale-110 transition-transform shrink-0" />
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-800 truncate">Acc</span>
+              <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mb-1">
+                <Target className="w-4 h-4 stroke-[2.5]" />
+              </div>
+              <span className="text-[9.5px] font-extrabold uppercase tracking-widest text-[#716F68] truncate w-full">ACCURACY</span>
+              <span className="text-[13px] font-black text-[#18181B] mt-0.5">98.5% ACC</span>
             </button>
 
-            {/* Metric Button 3: QC Check */}
+            {/* LMS Progress segment */}
             <button
               type="button"
-              onClick={() => setActiveMetricModal("qc")}
-              title={isHindi ? "क्यूसी चेक देखें" : "View Quality Control Check"}
-              className="flex items-center justify-center gap-2 py-1.5 px-2.5 rounded-xl bg-[#F4F3EE] hover:bg-[#EBEAE5] text-[#18181B] border border-black/[0.03] shadow-2xs group transition-all cursor-pointer active:scale-95 text-center min-w-0 font-bold"
+              className="flex flex-col items-center justify-center flex-1 py-2.5 px-1 bg-[#F4F3EE] hover:bg-stone-200 rounded-2xl border border-black/[0.02] text-center transition-colors shrink-0 cursor-pointer min-w-0"
             >
-              <CheckCircle2 className="w-3.5 h-3.5 text-amber-600 stroke-[2.5] group-hover:scale-110 transition-transform shrink-0" />
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-800 truncate">QC</span>
+              <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 mb-1">
+                <BookOpen className="w-4 h-4 stroke-[2]" />
+              </div>
+              <span className="text-[9.5px] font-extrabold uppercase tracking-widest text-[#716F68] truncate w-full">LMS STATUS</span>
+              <span className="text-[13px] font-black text-[#18181B] mt-0.5">83% DONE</span>
             </button>
+          </div>
+
+          {/* Bottom Segment: Live Progress Bars (actual / live) */}
+          <div className="mt-4 pt-3.5 border-t border-black/5 space-y-3">
+            {/* LMS Progress Bar */}
+            <div className="space-y-1">
+              <div className="flex justify-between items-center text-[10px] font-extrabold tracking-wide text-stone-700 leading-none">
+                <span>LMS PROGRESS (ACTUAL)</span>
+                <span className="font-bold text-[#18181B]">{!hasAssignedLms ? "100" : lmsProgressPct}%</span>
+              </div>
+              <div className="w-full h-1.5 bg-[#E5E4DE] rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-blue-600 shadow-3xs transition-all duration-500"
+                  style={{ width: `${!hasAssignedLms ? 100 : lmsProgressPct}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Floor Activities Progress Bar */}
+            <div className="space-y-1">
+              <div className="flex justify-between items-center text-[10px] font-extrabold tracking-wide text-stone-700 leading-none">
+                <span>ACTIVITY PROGRESS (LIVE)</span>
+                <span className="font-bold text-[#18181B]">{activityProgressPct}%</span>
+              </div>
+              <div className="w-full h-1.5 bg-[#E5E4DE] rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-[#18181B] shadow-3xs transition-all duration-500"
+                  style={{ width: `${activityProgressPct}%` }}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* SECTION 3: TODAY'S SHIFT FOCUS (REIMAGINED AS 2X2 TELEMETRY STYLE GRID CARD & DRILLS) */}
+        {/* Video SOP Card - rest of the text removed */}
+        <div
+          id="telemetry-terminal-sync-card"
+          className="bg-white rounded-[24px] sm:rounded-[26px] p-3.5 sm:p-4 flex items-center justify-between shadow-xs border border-black/[0.03] cursor-pointer hover:bg-slate-50 transition-colors"
+          onClick={() => setIsPlayingVideoModal(true)}
+        >
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-[#F4F3EE] flex items-center justify-center text-[#18181B] shrink-0">
+              <Radio className="w-5 h-5 stroke-[2.2] text-[#18181B] animate-pulse" />
+            </div>
+            <div>
+              <h3 className="text-[14.5px] sm:text-[15px] font-black text-[#18181B] leading-none">
+                {isHindi ? "आज का LMS वीडियो" : "Today's LMS Video"}
+              </h3>
+            </div>
+          </div>
+
+          {/* WATCH Button */}
+          <button
+            type="button"
+            className="px-4 py-2 bg-[#18181B] hover:bg-neutral-800 text-white font-black text-xs rounded-full uppercase tracking-wider shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-1.5"
+          >
+            <Play className="w-3 h-3 fill-white text-white" />
+            <span>{isHindi ? "देखें" : "WATCH"}</span>
+          </button>
+        </div>
+
+        {/* SECTION 3: TODAY'S SHIFT FOCUS (REIMAGINED AS 2X2 TELEMETRY ZONE-STYLE WHITE GRID CARDS) */}
         <div id="what-why-how-tab-container" className="space-y-3">
           <div className="bg-transparent text-stone-900 transition-all duration-300">
-            <div className="flex items-center justify-between mb-3 px-1 select-none">
-              <div>
-                <h3 className="text-xs sm:text-[13px] font-extrabold uppercase tracking-wider text-[#716F68] flex items-center gap-2">
-                  <span>{isHindi ? "आज का मुख्य लक्ष्य" : "TODAY'S SHIFT FOCUS"}</span>
-                </h3>
-                <span className="text-xs font-black text-[#18181B] block mt-0.5">
-                  {isHindi ? `दिन ${currentDay} • फ़्लोर लक्ष्य` : `Day ${currentDay} • Top Focus Areas`}
-                </span>
-              </div>
-
-              {/* Reset Button */}
-              <button
-                type="button"
-                onClick={() => setCompletedFocusItems({ lesson: false, weight: false, chime: false, speed: false, acc: false })}
-                className="text-[10px] font-black text-[#716F68] hover:text-[#18181B] uppercase tracking-wider flex items-center gap-1 cursor-pointer"
-              >
-                <span>{isHindi ? "रीसेट" : "RESET"}</span>
-              </button>
-            </div>
-
-            {/* 2x2 Grid of 4 Focus Cards matching Telemetry Style */}
+            {/* 2x2 Grid of 4 Focus Cards matching Telemetry Card Style Exactly */}
             <div className="grid grid-cols-2 gap-3 mb-4">
               {/* Card 1: LMS Floor Training */}
               <div
                 onClick={() => setCompletedFocusItems(prev => ({ ...prev, lesson: !prev.lesson }))}
-                className={`p-4 rounded-[22px] border flex flex-col justify-between min-h-[115px] cursor-pointer transition-all active:scale-[0.98] ${
-                  completedFocusItems.lesson
-                    ? "bg-emerald-50/60 border-emerald-200 text-stone-500"
-                    : "bg-white border-black/[0.03] shadow-2xs hover:bg-slate-50 text-stone-900"
-                }`}
+                className="rounded-[24px] sm:rounded-[26px] p-4 flex flex-col justify-between min-h-[145px] sm:min-h-[150px] shadow-xs cursor-pointer transition-all active:scale-98 bg-white text-stone-900 border border-black/[0.03] hover:bg-stone-50"
               >
                 <div className="flex items-center justify-between w-full">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
-                    <BookOpen className="w-4.5 h-4.5 stroke-[2.2]" />
+                  <div className="w-10 h-10 rounded-2xl bg-[#F4F3EE] text-[#18181B] flex items-center justify-center shrink-0">
+                    <BookOpen className="w-5 h-5 stroke-[1.8]" />
                   </div>
                   <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
-                    completedFocusItems.lesson ? "bg-emerald-500 border-emerald-500 text-white" : "border-slate-300 bg-white text-transparent"
+                    completedFocusItems.lesson ? "bg-[#18181B] border-[#18181B] text-white" : "border-slate-300 bg-white text-transparent"
                   }`}>
                     <Check className="w-3 h-3 stroke-[3]" />
                   </div>
                 </div>
-                <div className="mt-2.5">
-                  <span className={`text-[12.5px] font-black leading-tight block truncate ${completedFocusItems.lesson ? "line-through text-slate-400" : ""}`}>
+                <div className="mt-4">
+                  <h3 className={`text-[14.5px] sm:text-[15px] font-bold leading-tight text-[#18181B] ${completedFocusItems.lesson ? "line-through text-stone-400" : ""}`}>
                     {isHindi ? "फ़्लोर ट्रेनिंग" : "Floor Training"}
-                  </span>
-                  <span className="text-[10px] text-slate-500 font-medium block truncate mt-0.5">
+                  </h3>
+                  <p className="text-xs font-normal mt-0.5 leading-tight text-[#8E8C85]">
                     {isHindi ? "SOP नियम सीखें" : "Variant SOP Rules"}
-                  </span>
+                  </p>
                 </div>
               </div>
 
               {/* Card 2: Pack Weight */}
               <div
                 onClick={() => setCompletedFocusItems(prev => ({ ...prev, weight: !prev.weight }))}
-                className={`p-4 rounded-[22px] border flex flex-col justify-between min-h-[115px] cursor-pointer transition-all active:scale-[0.98] ${
-                  completedFocusItems.weight
-                    ? "bg-emerald-50/60 border-emerald-200 text-stone-500"
-                    : "bg-white border-black/[0.03] shadow-2xs hover:bg-slate-50 text-stone-900"
-                }`}
+                className="rounded-[24px] sm:rounded-[26px] p-4 flex flex-col justify-between min-h-[145px] sm:min-h-[150px] shadow-xs cursor-pointer transition-all active:scale-98 bg-white text-stone-900 border border-black/[0.03] hover:bg-stone-50"
               >
                 <div className="flex items-center justify-between w-full">
-                  <div className="w-8 h-8 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center shrink-0">
-                    <Layers className="w-4.5 h-4.5 stroke-[2.2]" />
+                  <div className="w-10 h-10 rounded-2xl bg-[#F4F3EE] text-[#18181B] flex items-center justify-center shrink-0">
+                    <Layers className="w-5 h-5 stroke-[1.8]" />
                   </div>
                   <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
-                    completedFocusItems.weight ? "bg-emerald-500 border-emerald-500 text-white" : "border-slate-300 bg-white text-transparent"
+                    completedFocusItems.weight ? "bg-[#18181B] border-[#18181B] text-white" : "border-slate-300 bg-white text-transparent"
                   }`}>
                     <Check className="w-3 h-3 stroke-[3]" />
                   </div>
                 </div>
-                <div className="mt-2.5">
-                  <span className={`text-[12.5px] font-black leading-tight block truncate ${completedFocusItems.weight ? "line-through text-slate-400" : ""}`}>
+                <div className="mt-4">
+                  <h3 className={`text-[14.5px] sm:text-[15px] font-bold leading-tight text-[#18181B] ${completedFocusItems.weight ? "line-through text-stone-400" : ""}`}>
                     {isHindi ? "वजन सत्यापन" : "Verify Weight"}
-                  </span>
-                  <span className="text-[10px] text-slate-500 font-medium block truncate mt-0.5">
+                  </h3>
+                  <p className="text-xs font-normal mt-0.5 leading-tight text-[#8E8C85]">
                     {isHindi ? "200g vs 500g मिलान" : "Confirm packet option"}
-                  </span>
+                  </p>
                 </div>
               </div>
 
               {/* Card 3: Scanner chime */}
               <div
                 onClick={() => setCompletedFocusItems(prev => ({ ...prev, chime: !prev.chime }))}
-                className={`p-4 rounded-[22px] border flex flex-col justify-between min-h-[115px] cursor-pointer transition-all active:scale-[0.98] ${
-                  completedFocusItems.chime
-                    ? "bg-emerald-50/60 border-emerald-200 text-stone-500"
-                    : "bg-white border-black/[0.03] shadow-2xs hover:bg-slate-50 text-stone-900"
-                }`}
+                className="rounded-[24px] sm:rounded-[26px] p-4 flex flex-col justify-between min-h-[145px] sm:min-h-[150px] shadow-xs cursor-pointer transition-all active:scale-98 bg-white text-stone-900 border border-black/[0.03] hover:bg-stone-50"
               >
                 <div className="flex items-center justify-between w-full">
-                  <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
-                    <Volume2 className="w-4.5 h-4.5 stroke-[2.2]" />
+                  <div className="w-10 h-10 rounded-2xl bg-[#F4F3EE] text-[#18181B] flex items-center justify-center shrink-0">
+                    <Volume2 className="w-5 h-5 stroke-[1.8]" />
                   </div>
                   <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
-                    completedFocusItems.chime ? "bg-emerald-500 border-emerald-500 text-white" : "border-slate-300 bg-white text-transparent"
+                    completedFocusItems.chime ? "bg-[#18181B] border-[#18181B] text-white" : "border-slate-300 bg-white text-transparent"
                   }`}>
                     <Check className="w-3 h-3 stroke-[3]" />
                   </div>
                 </div>
-                <div className="mt-2.5">
-                  <span className={`text-[12.5px] font-black leading-tight block truncate ${completedFocusItems.chime ? "line-through text-slate-400" : ""}`}>
+                <div className="mt-4">
+                  <h3 className={`text-[14.5px] sm:text-[15px] font-bold leading-tight text-[#18181B] ${completedFocusItems.chime ? "line-through text-stone-400" : ""}`}>
                     {isHindi ? "पुष्टि बीप सुनें" : "Scanner Chime"}
-                  </span>
-                  <span className="text-[10px] text-slate-500 font-medium block truncate mt-0.5">
+                  </h3>
+                  <p className="text-xs font-normal mt-0.5 leading-tight text-[#8E8C85]">
                     {isHindi ? "एक ही ग्रीन बीप सुनें" : "Wait for single beep"}
-                  </span>
+                  </p>
                 </div>
               </div>
 
               {/* Card 4: Hit speed target */}
               <div
                 onClick={() => setCompletedFocusItems(prev => ({ ...prev, speed: !prev.speed }))}
-                className={`p-4 rounded-[22px] border flex flex-col justify-between min-h-[115px] cursor-pointer transition-all active:scale-[0.98] ${
-                  completedFocusItems.speed
-                    ? "bg-emerald-50/60 border-emerald-200 text-stone-500"
-                    : "bg-white border-black/[0.03] shadow-2xs hover:bg-slate-50 text-stone-900"
-                }`}
+                className="rounded-[24px] sm:rounded-[26px] p-4 flex flex-col justify-between min-h-[145px] sm:min-h-[150px] shadow-xs cursor-pointer transition-all active:scale-98 bg-white text-stone-900 border border-black/[0.03] hover:bg-stone-50"
               >
                 <div className="flex items-center justify-between w-full">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                    <Zap className="w-4.5 h-4.5 stroke-[2.2]" />
+                  <div className="w-10 h-10 rounded-2xl bg-[#F4F3EE] text-[#18181B] flex items-center justify-center shrink-0">
+                    <Zap className="w-5 h-5 stroke-[1.8]" />
                   </div>
                   <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
-                    completedFocusItems.speed ? "bg-emerald-500 border-emerald-500 text-white" : "border-slate-300 bg-white text-transparent"
+                    completedFocusItems.speed ? "bg-[#18181B] border-[#18181B] text-white" : "border-slate-300 bg-white text-transparent"
                   }`}>
                     <Check className="w-3 h-3 stroke-[3]" />
                   </div>
                 </div>
-                <div className="mt-2.5">
-                  <span className={`text-[12.5px] font-black leading-tight block truncate ${completedFocusItems.speed ? "line-through text-slate-400" : ""}`}>
+                <div className="mt-4">
+                  <h3 className={`text-[14.5px] sm:text-[15px] font-bold leading-tight text-[#18181B] ${completedFocusItems.speed ? "line-through text-stone-400" : ""}`}>
                     {isHindi ? "स्पीड लक्ष्य" : "Speed Target"}
-                  </span>
-                  <span className="text-[10px] text-slate-500 font-medium block truncate mt-0.5">
-                    {isHindi ? "45+ आइटम प्रति घंटा" : "Aim for 45+ items/hr"}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Zebra Terminal #104 Card with LMS Video links */}
-            <div
-              id="telemetry-terminal-sync-card"
-              className="bg-white rounded-[24px] sm:rounded-[26px] p-3.5 sm:p-4 flex items-center justify-between shadow-xs border border-black/[0.03] mb-4 cursor-pointer hover:bg-slate-50 transition-colors"
-              onClick={() => setIsPlayingVideoModal(true)}
-            >
-              <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-2xl bg-[#F4F3EE] flex items-center justify-center text-[#18181B] shrink-0">
-                  <Radio className="w-5 h-5 stroke-[2.2] text-[#18181B] animate-pulse" />
-                </div>
-                <div>
-                  <h3 className="text-[14.5px] sm:text-[15px] font-black text-[#18181B] leading-tight">
-                    {isHindi ? "ज़ेबरा टर्मिनल #104" : "Zebra Terminal #104"}
                   </h3>
-                  <p className="text-[11px] text-[#8E8C85] font-semibold leading-tight mt-0.5">
-                    {isHindi ? "LMS वीडियो SOPs सिंक किए गए" : "LMS Video SOPs Synced • 1080p HD"}
+                  <p className="text-xs font-normal mt-0.5 leading-tight text-[#8E8C85]">
+                    {isHindi ? "45+ आइटम प्रति घंटा" : "Aim for 45+ items/hr"}
                   </p>
                 </div>
               </div>
-
-              {/* Play Video button */}
-              <button
-                type="button"
-                className="px-3.5 py-2 bg-[#18181B] hover:bg-neutral-800 text-white font-black text-xs rounded-full uppercase tracking-wider shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-1.5"
-              >
-                <Play className="w-3 h-3 fill-white text-white" />
-                <span>{isHindi ? "वीडियो" : "WATCH"}</span>
-              </button>
             </div>
 
-            {/* Active floor checklist and drills (Today's Tasks) */}
-            <div className="bg-white rounded-[28px] p-5 shadow-xs border border-black/[0.03] space-y-4">
-              <div>
-                <h4 className="text-xs sm:text-[12.5px] font-black text-[#18181B] uppercase tracking-wide">
-                  {isHindi ? "सक्रिय फ्लोर चेकलिस्ट और अभ्यास" : "Active Floor Checklist & Drills"}
-                </h4>
-                <p className="text-[11px] text-[#8E8C85] font-medium mt-0.5">
-                  {isHindi ? "आज की फ्लोर शिफ्ट का कार्यभार" : "Your active shift duties for today"}
-                </p>
+            {/* Today's Task Completion Progress Card - matching screenshot */}
+            <div className="bg-[#F4F3EE] rounded-[24px] p-4 border border-black/[0.03] shadow-3xs space-y-2.5 mb-4 animate-in fade-in duration-300">
+              <div className="flex justify-between items-center text-xs sm:text-[13px] font-black text-[#18181B] uppercase tracking-wide">
+                <span>{isHindi ? "आज के कार्य का समापन" : "Today's Task Completion"}</span>
+                <span>{completedScreenshotItems} / {totalScreenshotItems} Completed</span>
               </div>
+              <div className="w-full h-2 bg-[#ECEAE3] rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#18181B] rounded-full transition-all duration-500"
+                  style={{ width: `${Math.round((completedScreenshotItems / totalScreenshotItems) * 100)}%` }}
+                />
+              </div>
+            </div>
 
-              {/* Main Action Call button */}
-              <button
-                type="button"
-                onClick={() => handleOpenTaskDestination(recAction?.id || "floor-task", recAction?.targetActor || "work")}
-                className="w-full py-3.5 px-6 bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white font-black text-sm rounded-2xl shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
-              >
-                <Play className="w-4 h-4 fill-white" />
-                <span>{isHindi ? "फ़्लोर कार्य शुरू करें" : "Start Today's On-Floor Task"}</span>
-              </button>
+            {/* Interactive screenshot-accurate task card list */}
+            <div className="space-y-3.5">
+              {screenshotTasks.map((task) => {
+                const isTaskAllDone = task.items.every((i) => i.completed);
+
+                return (
+                  <div
+                    key={task.id}
+                    onClick={() => toggleExpandTask(task.id)}
+                    className="bg-white rounded-[28px] border border-black/[0.04] p-4 shadow-3xs relative overflow-hidden transition-all duration-300 text-left"
+                  >
+                    {/* Header Row */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3 min-w-0">
+                        {/* Check Circle Icon on left */}
+                        <div
+                          className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-colors duration-300 ${
+                            isTaskAllDone
+                              ? "bg-[#18181B] text-white shadow-2xs"
+                              : "border border-stone-300 bg-[#F4F3EE]/40 text-stone-400"
+                          }`}
+                        >
+                          <CheckCircle2 className="w-5 h-5 stroke-[2.2]" />
+                        </div>
+
+                        {/* Title and subtext */}
+                        <div className="min-w-0 pt-0.5">
+                          <h4 className="text-[14.5px] sm:text-[15px] font-black text-[#18181B] leading-tight truncate">
+                            {isHindi && (task as any).titleHi ? (task as any).titleHi : task.title}
+                          </h4>
+                          <p className="text-[11.5px] text-[#8E8C85] font-semibold leading-normal mt-0.5 truncate">
+                            {isHindi && (task as any).subtextHi ? (task as any).subtextHi : task.subtext}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Badge on Right */}
+                      <span className="bg-[#18181B] text-white text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shrink-0">
+                        {task.badge}
+                      </span>
+                    </div>
+
+                    {/* Collapsible Panel of Sub Checklist items */}
+                    {task.expanded && (
+                      <div className="mt-3.5 p-3 bg-[#F4F3EE]/40 border border-black/[0.02] rounded-2xl space-y-2.5 animate-in fade-in duration-200">
+                        <div className="space-y-2">
+                          {task.items.map((item) => (
+                            <div
+                              key={item.id}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleSubItem(task.id, item.id);
+                              }}
+                              className="bg-white border border-[#EBEAE5] rounded-[18px] p-3 flex items-start gap-3 cursor-pointer hover:bg-slate-50 transition-colors duration-150"
+                            >
+                              {/* Custom premium checkbox */}
+                              <div
+                                className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 mt-0.5 cursor-pointer transition-all ${
+                                  item.completed
+                                    ? "bg-[#18181B] border-[#18181B] text-white animate-in zoom-in-75 duration-100"
+                                    : "border-stone-300 bg-white"
+                                }`}
+                              >
+                                {item.completed && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                              </div>
+
+                              <span
+                                className={`text-[12.5px] font-bold leading-snug ${
+                                  item.completed ? "line-through text-stone-400" : "text-stone-800"
+                                }`}
+                              >
+                                {item.label}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Mark All Done button aligned bottom right */}
+                        <div className="flex justify-end pt-1">
+                          <button
+                            type="button"
+                            onClick={(e) => markAllDone(task.id, e)}
+                            className="px-4 py-2 bg-[#F4F3EE] hover:bg-[#EBEAE5] text-stone-800 font-extrabold text-[11px] uppercase tracking-wider rounded-xl cursor-pointer active:scale-95 transition-all shadow-3xs"
+                          >
+                            {isHindi ? "सभी पूर्ण करें" : "Mark All Done"}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
