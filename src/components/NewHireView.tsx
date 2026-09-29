@@ -1465,7 +1465,7 @@ export const NewHireView: React.FC<NewHireViewProps> = ({
           </div>
 
           {/* CARD 2: COMMERCIAL READINESS TRAJECTORY GRAPH (Stays in the Middle matching screenshot) */}
-          <div className="bg-[#13151D]/95 backdrop-blur-2xl rounded-[32px] p-0.5 shadow-xl border border-white/10">
+          <div className="w-full">
             <CommercialReadinessTrajectoryMiniCard
               newHire={newHire}
               currentDay={currentDay}
@@ -1474,18 +1474,18 @@ export const NewHireView: React.FC<NewHireViewProps> = ({
             />
           </div>
 
-          {/* CARD 3: MY SKILLS - 4 CORE AREAS (Positioned at bottom with custom screenshot styles) */}
-          <div className="bg-[#141824] rounded-[32px] p-5 shadow-xl border border-white/10 space-y-4">
+          {/* CARD 3: MY SKILLS - 4 CORE AREAS (Light theme premium consistent rhythm styling) */}
+          <div className="bg-[#EBEAE5] rounded-[28px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-black/[0.04] space-y-4">
             <div className="flex items-center justify-between px-1">
-              <span className="font-extrabold text-[12px] tracking-wider text-white uppercase">
+              <span className="font-extrabold text-[12px] tracking-wider text-[#18181B] uppercase">
                 {isHindi ? "मेरा कौशल" : "MY SKILLS"}
               </span>
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <span className="text-[10px] font-black text-[#716F68] uppercase tracking-widest">
                 {isHindi ? "4 मुख्य क्षेत्र" : "4 Core Areas"}
               </span>
             </div>
 
-            {/* Square style cards in horizontal row matching screenshot */}
+            {/* Square style cards in horizontal row matching screenshot styling, but with premium light consistent styles */}
             <div className="grid grid-cols-4 gap-2.5">
               {HOME_LEARNING_METRICS.map((metric) => {
                 let isUpToDate = true;
@@ -1505,15 +1505,15 @@ export const NewHireView: React.FC<NewHireViewProps> = ({
                   <div
                     key={metric.id}
                     onClick={() => setActiveSection("modules")}
-                    className="group flex flex-col items-center justify-center bg-[#0e221d] border border-emerald-500/15 text-white rounded-[24px] p-2.5 flex-1 min-h-[110px] hover:bg-[#122e27] active:scale-95 transition-all cursor-pointer text-center"
+                    className="group flex flex-col items-center justify-center bg-white/80 border border-black/[0.03] text-slate-800 rounded-[24px] p-2.5 flex-1 min-h-[110px] hover:bg-white shadow-[0_4px_16px_rgba(0,0,0,0.02)] active:scale-95 transition-all cursor-pointer text-center"
                   >
-                    {/* Centered Circular Icon with custom container matching screenshot */}
-                    <div className="w-11 h-11 rounded-full bg-[#1b3d36] flex items-center justify-center text-emerald-400 shrink-0 mb-2">
+                    {/* Centered Circular Icon with custom container matching screenshot structure, but in light theme */}
+                    <div className="w-11 h-11 rounded-full bg-[#18181B]/8 flex items-center justify-center text-[#18181B] shrink-0 mb-2 group-hover:scale-105 transition-transform">
                       <IconComp className="w-5 h-5 stroke-[2.2]" />
                     </div>
                     
                     {/* Label beneath icon */}
-                    <span className="text-[11px] sm:text-[12px] font-black text-white/95 tracking-tight leading-none">
+                    <span className="text-[11px] sm:text-[12px] font-black text-[#18181B] tracking-tight leading-none">
                       {isHindi ? metric.titleHi : metric.titleShortEn}
                     </span>
                   </div>

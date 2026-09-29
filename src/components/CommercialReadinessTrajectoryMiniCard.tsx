@@ -130,21 +130,15 @@ export const CommercialReadinessTrajectoryMiniCard: React.FC<CommercialReadiness
     <div
       id="home-commercial-readiness-card"
       onClick={onNavigateToProgress}
-      className="w-full bg-[#13151D] rounded-[28px] border border-white/10 shadow-xl relative overflow-hidden mb-5 cursor-pointer transition-all active:scale-[0.99] group text-left backdrop-blur-xl"
+      className="w-full bg-[#EBEAE5] rounded-[28px] border border-black/[0.04] shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden mb-5 cursor-pointer transition-all active:scale-[0.99] group text-left"
     >
-      {/* Ambient Crimson/Purple Radial Glow in Top Right */}
-      <div
-        className="absolute -top-12 -right-12 w-52 h-52 rounded-full pointer-events-none opacity-40 blur-3xl"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(225, 29, 72, 0.45) 0%, rgba(147, 51, 234, 0.2) 60%, transparent 85%)",
-        }}
-      />
+      {/* Soft internal gradient highlight instead of dark glow */}
+      <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
 
       {/* Card Header: Title, Status Legend & Chevron Navigation */}
       <div className="pt-4 sm:pt-5 px-4 sm:px-5 pb-1 relative z-10">
         <div className="flex items-center justify-between">
-          <h3 className="text-base sm:text-[17px] font-bold text-white tracking-tight leading-snug">
+          <h3 className="text-base sm:text-[17px] font-black text-[#18181B] tracking-tight leading-snug">
             {isHindi ? "मेरी सीख का सफ़र" : "My Learning Journey"}
           </h3>
           <button
@@ -153,7 +147,7 @@ export const CommercialReadinessTrajectoryMiniCard: React.FC<CommercialReadiness
               e.stopPropagation();
               onNavigateToProgress?.();
             }}
-            className="w-7 h-7 rounded-full bg-white/10 group-hover:bg-white/20 flex items-center justify-center text-white/70 group-hover:text-white transition-all cursor-pointer active:scale-95 shrink-0"
+            className="w-7 h-7 rounded-full bg-black/5 group-hover:bg-black/10 flex items-center justify-center text-[#18181B]/75 group-hover:text-[#18181B] transition-all cursor-pointer active:scale-95 shrink-0"
             title={isHindi ? "प्रगति देखें" : "View Progress"}
           >
             <ChevronRight className="w-4 h-4 stroke-[2.5]" />
@@ -161,17 +155,17 @@ export const CommercialReadinessTrajectoryMiniCard: React.FC<CommercialReadiness
         </div>
 
         {/* Status Indicators Legend */}
-        <div className="flex items-center gap-3.5 mt-1.5 text-[10.5px] font-semibold text-white/65">
+        <div className="flex items-center gap-3.5 mt-1.5 text-[10.5px] font-bold text-[#716F68]">
           <span className="inline-flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
+            <span className="w-2 h-2 rounded-full bg-[#10B981] shadow-xs" />
             <span>{isHindi ? "अच्छा प्रदर्शन" : "Doing well"}</span>
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.8)]" />
+            <span className="w-2 h-2 rounded-full bg-[#F59E0B] shadow-xs" />
             <span>{isHindi ? "ध्यान आवश्यक" : "Needs attention"}</span>
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.8)]" />
+            <span className="w-2 h-2 rounded-full bg-[#EF4444] shadow-xs" />
             <span>{isHindi ? "जोखिम में" : "At risk"}</span>
           </span>
         </div>
@@ -184,11 +178,11 @@ export const CommercialReadinessTrajectoryMiniCard: React.FC<CommercialReadiness
           className="w-full h-auto overflow-visible select-none"
         >
           <defs>
-            {/* White-to-transparent vertical gradient fill */}
+            {/* Charcoal-to-transparent vertical gradient fill */}
             <linearGradient id="homeTrajectoryGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.25" />
-              <stop offset="60%" stopColor="#FFFFFF" stopOpacity="0.08" />
-              <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.00" />
+              <stop offset="0%" stopColor="#18181B" stopOpacity="0.12" />
+              <stop offset="60%" stopColor="#18181B" stopOpacity="0.04" />
+              <stop offset="100%" stopColor="#18181B" stopOpacity="0.00" />
             </linearGradient>
 
             {/* Glowing aura filter for points */}
@@ -207,7 +201,7 @@ export const CommercialReadinessTrajectoryMiniCard: React.FC<CommercialReadiness
                 y1={y}
                 x2={svgWidth}
                 y2={y}
-                stroke="rgba(255, 255, 255, 0.10)"
+                stroke="rgba(24, 24, 27, 0.08)"
                 strokeWidth="1"
               />
             );
@@ -216,11 +210,11 @@ export const CommercialReadinessTrajectoryMiniCard: React.FC<CommercialReadiness
           {/* Shaded Area Under Trajectory Line */}
           <path d={areaPathD} fill="url(#homeTrajectoryGradient)" />
 
-          {/* High-Contrast White Trajectory Line */}
+          {/* High-Contrast Charcoal Trajectory Line */}
           <path
             d={linePathD}
             fill="none"
-            stroke="#FFFFFF"
+            stroke="#18181B"
             strokeWidth="2.8"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -299,7 +293,7 @@ export const CommercialReadinessTrajectoryMiniCard: React.FC<CommercialReadiness
                 textAnchor="middle"
                 fontSize="11"
                 fontWeight={isPastOrCurrent ? "700" : "500"}
-                fill={isPastOrCurrent ? "rgba(255, 255, 255, 0.85)" : "rgba(255, 255, 255, 0.35)"}
+                fill={isPastOrCurrent ? "rgba(24, 24, 27, 0.85)" : "rgba(24, 24, 27, 0.35)"}
               >
                 {dayNum}
               </text>

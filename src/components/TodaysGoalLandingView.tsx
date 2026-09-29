@@ -427,18 +427,9 @@ export const TodaysGoalLandingView: React.FC<TodaysGoalLandingViewProps> = ({
           {/* Ambient inner glass highlight */}
           <div className="absolute -top-12 -left-12 w-48 h-48 bg-white/25 rounded-full blur-2xl pointer-events-none" />
 
-          {/* Top Row: Percentage and Micro Glass Progress Bars */}
-          <div className="flex items-center gap-4 relative z-10 pt-2">
-            <div className="flex items-baseline shrink-0 leading-none">
-              <span className="font-black text-white tracking-[-0.04em] text-[56px] sm:text-[66px]">
-                {displayedPercentage}
-              </span>
-              <span className="font-bold text-white/90 text-2xl sm:text-3xl ml-0.5">
-                %
-              </span>
-            </div>
-            
-            <div className="space-y-1.5 pl-4 border-l border-white/15 flex-1 max-w-[160px]">
+          {/* Top Row: Micro Glass Progress Bars (Percentage removed) */}
+          <div className="flex items-center gap-4 relative z-10 pt-2 w-full">
+            <div className="space-y-2.5 flex-1 w-full">
               {/* LMS Micro Bar */}
               <div className="space-y-0.5 w-full">
                 <div className="flex justify-between items-center text-[9.5px] font-black tracking-wide text-white/95 leading-none">
